@@ -9,6 +9,8 @@ using System.ServiceModel;
 namespace WCFLibrary
 {
     [ServiceContract(CallbackContract = typeof(IClient),SessionMode = SessionMode.Required)]
+    [ServiceKnownType(typeof(MyMessage))]
+    [ServiceKnownType(typeof(AccountType))]
     public interface IServer
     {
         [OperationContract(IsInitiating = true)]
@@ -18,12 +20,12 @@ namespace WCFLibrary
         void Disconnect();
 
         [OperationContract(IsOneWay = true)]
-        void SendNewMessage(string message);
+        void SendNewMessage(MyMessage message);
     }
 
     public interface IClient
     {
         [OperationContract(IsOneWay = true)]
-        void OnNewMessage(string message);
+        void OnNewMessage(MyMessage message);
     }
 }

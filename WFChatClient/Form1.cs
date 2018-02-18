@@ -19,15 +19,19 @@ namespace WFChatClient
         IClient client;
         IServer server;
 
-        private void OnMessage(string message)
+        private void OnMessage(MyMessage message)
         {
-            listBoxMessages.Items.Add(message);
+            string output = String.Format("{0} - {1} - {2}", message.Name, message.AccountType, message.Content);
+
+            listBoxMessages.Items.Add(output);
         }
 
         public Form1()
         {
             InitializeComponent();
             client = new Client(OnMessage);
+
+            comboBoxAccountType.Items.AddRange(Enum.GetNames(typeof(AccountType)));
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -43,23 +47,32 @@ namespace WFChatClient
             (server as ICommunicationObject).Close();
         }
 
+
         private void buttonSend_Click(object sender, EventArgs e)
         {
-            server.SendNewMessage(textBoxMessage.Text);
-            textBoxMessage.Clear();
+            string name = textBoxName.Text;
+            AccountType type = (AccountType)Enum.Parse(typeof(AccountType), comboBoxAccountType.SelectedItem.ToString());
+            string content = textBoxContent.Text;
+
+            MyMessage myMSG = new MyMessage(content, name, type);
+
+            server.SendNewMessage(myMSG);
+
+            textBoxContent.Clear();
+            comboBoxAccountType.SelectedIndex = -1;
         }
     }
 
     class Client : IClient
     {
-        private Action<string> OnMessage;
+        private Action<MyMessage> OnMessage;
 
-        public Client(Action<string> OnMessage)
+        public Client(Action<MyMessage> OnMessage)
         {
             this.OnMessage = OnMessage;
         }
 
-        public void OnNewMessage(string message)
+        public void OnNewMessage(MyMessage message)
         {
             OnMessage.Invoke(message);
         }

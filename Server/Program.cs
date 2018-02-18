@@ -23,7 +23,7 @@ namespace Server
         }
     }
 
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
+    [ServiceBehavior(ConcurrencyMode=ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerSession, UseSynchronizationContext = true)]
     class Server : IServer
     {
         List<IClient> clients = new List<IClient>();
@@ -56,7 +56,7 @@ namespace Server
             Console.WriteLine("Client {0}:{1} disconnected", ip, port);
         }
 
-        public void SendNewMessage(string message)
+        public void SendNewMessage(MyMessage message)
         {
             foreach (IClient client in clients)
             {
